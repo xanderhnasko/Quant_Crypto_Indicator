@@ -2,6 +2,7 @@
 import requests
 import BinanceAPI
 from BinanceAPI import *
+import csv
 
 
 #True if MACD value is greater than MACD signal
@@ -34,6 +35,21 @@ parameters = {
         ]
     }
 }
+
+csvfile = 'BTC_USD_Bitstamp_minute_2022-07-07.csv'
+reader = csv.reader(csvfile, delimiter= ' ', quotechar= '|')
+
+# Gets the moving average
+def get_moving_average_volume(filename):
+    avg = 0
+    tracker = 0
+    next(reader)
+    for row in reader:
+        avg += reader[row, 6]
+        tracker += 1
+    return avg/tracker
+        
+        
 while(True):
     # Send POST request and save the response as response object
     response = requests.post(url=endpoint, json=parameters)
@@ -55,14 +71,17 @@ while(True):
     #is_positive is True if value > signal, if we find that the value < signal now,
     #the value line has dropped below signal, indicating a sell. Vice versa for buy
     if is_positive == True and (value_0 - signal_0 < 0):
-        print("Sell")
-        BinanceAPI.sell(parameters["construct"]["symbol"])
-        # TODO write logic to initiate the sell order
+        if(reader[len(next(reader)), 5] >= get_moving_average_volume(csvfile)):
+            print("Sell")
+            BinanceAPI.sell(parameters["construct"]["symbol"])
+            # TODO write logic to initiate the sell order
+
     elif is_positive == False and (value_0 - signal_0 > 0):
-        print("Buy")
-        BinanceAPI.buy(parameters["construct"]["symbol"])
-         # TODO write logic to initiate the buy order
-    
+        if(reader[len(next(reader)), 5 ] >= get_moving_average_volume(csvfile)):
+            print("Buy")
+            BinanceAPI.buy(parameters["construct"]["symbol"])
+            # TODO write logic to initiate the buy order
+
     #Updates the value of is_positive based on current MACD value and signal
     if(value_0 - signal_0 > 0):
         is_positive = True
