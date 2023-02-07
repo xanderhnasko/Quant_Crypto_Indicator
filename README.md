@@ -6,7 +6,7 @@
  - uses exchange API keys to execute live-time trades over any coin market
  - Uses medium-term moving average and short-term trend data to establish grounds for trade execution
  - Confirms Moving Average Convergence/Divergence signals with corss-referenced buy/sell volume data to weed-out false positive signals
- - Uses triggered trailing stop-loss to exit trades once a certain profit margin has been achieved
+ - Uses trailing stop-loss to exit trades once a certain profit margin has been achieved
  
 ## To do
 1. Simulate trades over large periods of time, generalize results.
